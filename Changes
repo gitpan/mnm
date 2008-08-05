@@ -1,0 +1,61 @@
+mnm (0.02-1) unstable; urgency=low
+
+  * Updated packaging so that I can build a perl dist when I build
+    the debian dist.
+
+ -- Dale Amon <amon@vnl.com>  Mon,  4 Aug 2008 21:44:37 +0100
+
+mnm (0.01-4) unstable; urgency=low
+
+  * Added full long options and pod support of -h, --help and --man.
+
+  * Added a column to the record format to support portforwarded
+    ssh connections. The column may be "STD" to imply the normal
+    tcp22 connection or else a tcp port number, like 2222.
+
+  * Since this changes the mnm input file format, the old 5 column
+    record format has been grandfathered and will still work but
+    is not documented and gets a warning printed for every line
+    of that sort processed.
+
+  * Error message added for case where there are too few columns
+    in a record; if there are too many the extra ones are, for the
+    moment, ignored.
+
+  * Added --test switch to make it easy to test mnm data files without
+    it actually modifying the file system. This sets the rsync
+    -n option on all rsync calls.
+
+  * rsync will always use --partial so that partially transferred
+    files will be reused if you kill a transfer and restart. This
+    is very useful since I sometimes transfer multi-gigabyte file
+    system images which makes complete restarts an uninviting
+    proposition.
+
+ -- Dale Amon <amon@vnl.com>  Sun, 17 Feb 2008 03:03:07 +0000
+
+mnm (0.01-3) unstable; urgency=low
+
+  * Dropped use of system(a,b,c) for calling rsync because there were 
+    just too many problems with interpretations of args. I solved
+    those problems by constructing the whole string and using the
+    system(a) form. The problem with embedded metachars like 'Air&Space'
+    is solved by requiring they be properly quoted in the input
+    file, 'Air\&Space' for example.
+    This release also fixes a serious bug in setting the id string.
+    I used the wrong variable for the conditional.
+
+ -- Dale Amon <amon@islandone.org>  Tue, 27 Jun 2006 22:27:01 +0100
+
+mnm (0.01-2) unstable; urgency=low
+
+  * Bug fix release. Used $type instead of $key to select id!localhost 
+
+ -- Dale Amon <amon@islandone.org>  Sat, 24 Jun 2006 00:55:54 +0100
+
+mnm (0.01-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Dale Amon <amon@islandone.org>  Sat, 17 Jun 2006 11:44:44 +0100
+

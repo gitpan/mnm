@@ -1,0 +1,214 @@
+#!/usr/bin/perl -w
+#=================================== mnm =====================================
+# Merge and Mirror directories.
+#
+# Title:                mnm
+# Description:          Merge and Mirror source and destination repositories.
+# Programmed by:        Dale Amon <amon@vnl.com> 
+# Revised by:           $Author: $ 
+# Date:                 $Date: $ 
+# Version:              $Revision: $
+#
+# TODO		* Should test the 2nd and 3rd columns to make sure
+#		  they are readable files if they are local.
+#		* Which of course means we must determine if they
+#		  are remote.
+#
+#==============================================================================
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+
+my %opts;
+my $PROCESS_NAME    = "mnm";
+
+#==========================================================================
+# Switch handling
+
+my ($HELP,$MAN, $TEST,$QUIET) = (0, 0, 0, 0);
+my $opts  = Getopt::Long::Parser->new;
+$opts->getoptions (
+        'test'    => \$TEST,
+        'q|quiet' => \$QUIET,
+        'h|help'  => \$HELP,
+        'man'     => \$MAN
+);
+pod2usage(1)                            if $HELP;
+pod2usage(-exitval => 0, -verbose => 2) if $MAN;
+
+#--------------------------------------------------------------------------
+
+if ($#ARGV != 0 ) {
+     pod2usage(-exitval => "NOEXIT", -verbose => 1);
+     printf STDERR "$PROCESS_NAME must have a list file, eg.\n" .
+     		   "      $PROCESS_NAME /Admin/BackupList\n" .
+                   "Terminating...\n";
+     exit 1;
+   }
+my ($LISTFILE) = @ARGV;
+
+my ($type,$key,$list,$pnum,$src,$dst,
+    $delete,$id,$fromfile,$compress,$port,$ssh) =
+    ("MERGE","NOKEY","ALL","STD",undef,undef,"","","","","","");
+my (@rest);
+
+open LIST, "<$LISTFILE";
+
+while ( <LIST> ) {
+
+  # skip for blank lines, comments
+  next if (length == 0);
+  next if (/^\s*#/);
+  next if (/^\s*$/);
+
+  my @line = split;
+  if ($#line < 4)  {
+    print STDERR "Skipping mnm record with less than 5 arguments.\n";
+    next;
+  }
+  elsif ($#line == 4) {
+    ($type,$key,$list,$src,$dst) = @line;
+    print STDERR "Warning: 5 argument mnm record format found. Please" .
+      " change to 6 argument form:\n $type $key $list STD $src $dst";
+  }
+  elsif ($#line == 5) {($type,$key,$list,$pnum, $src,$dst)       = @line;}
+  else                {($type,$key,$list,$pnum, $src,$dst,@rest) = @line;}
+
+  if      ($type eq "MERGE")  {$delete="";}
+  elsif   ($type eq "MIRROR") {$delete="--delete";}
+  else                        {next;}
+
+  if	  ($pnum eq "STD")    {$port = "";}
+  else			      {$port = "-p $pnum"; $compress="z"}
+
+  if      ($key eq "NOKEY")   {$id   = "";}
+  else                        {$id   = "-i $key";  $compress="z"}
+
+  if      ($list eq "ALL")    {$fromfile = "";}
+  else                        {$fromfile = "--include-from=$list"}
+
+  if      ($port or $id)      {$ssh = "--rsh=\"/usr/bin/ssh $id $port\""}
+
+  # set up the rsync switches
+  my $t = ($TEST)  ? "n" : "";
+  my $q = ($QUIET) ? ""  : "v";
+  my $sw = "-" . $t . "a" . $q;
+
+  print "$type	$src -> $dst\n";
+
+  system ("rsync --partial $delete $fromfile $ssh $sw" . "$compress $src $dst") == 0 || print "Failed to $type src -> $dst\n";
+
+# This did not work well at all!
+#  system ("rsync", "--partial", "$delete", "$fromfile", $ssh, $sw, "$src", "$dst") == 0 || print "Failed to $type src -> $dst\n";
+
+}
+
+close LIST;
+
+#==============================================================================
+#                          POD DOCUMENTATION                                
+#==============================================================================
+# You may extract and format the documention section with the 'perldoc' cmd.
+
+=head1 NAME
+
+mnm - Merge and Mirror sources and archive/backup repositories
+
+=head1 SYNOPSIS
+
+mnm {-h | --help}
+    {--man }
+    (--test}
+    {-q | --quiet} <backuplistfile>
+
+=head1 Description
+
+Read the backup list file one line at a time and for each line
+carry out an rsync of the source set to the destination repository. 
+The lines carry information on whether to MIRROR or MERGE and whether
+NOKEY is required or a specified ssh identity is needed.
+Typical lines in that file would be:
+
+ MIRROR NOKEY ALL STD /my/srcdir /my/dstdir
+ MERGE /root/.ssh/id_key /Admin/list 2222 /my/archivedir root@foo.baz.com:/my/dstdir
+
+MIRROR means make the destination exactly like the source,
+which implies deletion of files which are at the destination
+but not in the source; MERGE means just shove files from 
+source into the destination and leave the unmatched files 
+at the destination alone.
+
+NOKEY means there is no identify key required; the 
+alternative is the absolute path to an ssh private key to 
+be used to initiate the connection. This is required for 
+machine to machine communications so that password prompts
+will not occur.
+
+ALL means the entire tree of files in the source definition will be 
+copied; otherwise the location should be a file using the rsync 
+include-from syntax.
+
+STD means use the standard ssh port, tcp25. Otherwise a private
+ssh port number should be supplied. This is often useful for
+sessions port-forwarded through a firewall.
+
+The file name must contain quoting if there are meta characters in it,
+for instance, Air&Space would appear as:
+
+	Air\&Space
+
+This command and the associated list file make it easy to move files
+all over the place, whether between local disks or between multiple
+machines over the world.
+
+Command switches are:
+
+ --quiet Don't show what we are doing. The default is to have rsync
+ -q      report what files are affected as this is an archive 
+         support mechanism that requires a 'paper trail' of what
+         is done. This switch is provided for those who do not care.
+
+ --test	 Run in test mode. Rsync commands are executed but no changes
+         are made to the file system.
+
+ --man   Print the pod documentation.
+
+ --help  Print program usage info.
+  -h
+
+=head1 Examples
+
+ None.
+
+=head1 Errors and Warnings
+
+ None.
+
+=head1 KNOWN BUGS
+
+ None.
+
+=head1 SEE ALSO
+
+ rsync, ssh.
+
+=head1 AUTHOR
+
+Dale Amon <amon@vnl.com>
+
+=cut
+
+
+#=============================================================================
+#                                CVS HISTORY
+#=============================================================================
+# $Log: $
+# 20080215	Dale Amon <amon@islandone.org>
+#		Added full switch support. Added support for port
+#		forwarding by allowing specification of an ssh port
+#		in each record. Grandfathered the old 5 arg format.
+# 20060627	Dale Amon <amon@islandone.org>
+#		Added support for include-from option.
+# 20060616	Dale Amon <amon@islandone.org>
+#		Created.
+1;
