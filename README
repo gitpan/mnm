@@ -1,40 +1,7 @@
-This directory is set up for 3 way use. Mostly you have to be
-root to do anything useful in this sort of development
+You can install this module with the usual CPAN commands:
 
-1) It is a debian native source directory. You can generate 
-a new debian package by doing:
-
-	cd example-1.00
-        dpkg-buildpackage -rsudo -k<keysig> -pgpg
-
-The end result is a new .deb package of the same name as this directory.
-That is why the directory is in the standard debian format.
-
-2) THIS PART IS NOT APPLICABLE TO NON-LIBRARY OBJECTS AT THIS TIME.
-
-Each of the major subdirectories is a separately updateable cvs 
-repository. Thus other people can work on parts of the system 
-rather than the whole one. So you use the usual cvs commands 
-to sync with the repository, for example:
-
-	cd Example/lib
-	cvs update
-
-Or to commit your own changes to the repository, for example:
-
-	cd Example/lib
-	cvs commit
-
-3) Each of the perl module subdirectories is a standard CPAN
-style perl source module. You can install just that module
-locally by doing the usual CPAN commands:
-
-	cd Example
 	perl Makefile.PL
 	make
 	make test
 	make install
-
-So keep this in mind on anything you do. It's convenient to be
-able to do all of these things.
 

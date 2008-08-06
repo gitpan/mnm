@@ -5,9 +5,9 @@
 # Title:                mnm
 # Description:          Merge and Mirror source and destination repositories.
 # Programmed by:        Dale Amon <amon@vnl.com> 
-# Revised by:           $Author: $ 
-# Date:                 $Date: $ 
-# Version:              $Revision: $
+# Revised by:           $Author: amon $ 
+# Date:                 $Date: 2008-08-05 14:01:22 $ 
+# Version:              $Revision: 1.1.1.1 $
 #
 # TODO		* Should test the 2nd and 3rd columns to make sure
 #		  they are readable files if they are local.
@@ -202,7 +202,10 @@ Dale Amon <amon@vnl.com>
 #=============================================================================
 #                                CVS HISTORY
 #=============================================================================
-# $Log: $
+# $Log: mnm,v $
+# Revision 1.1.1.1  2008-08-05 14:01:22  amon
+# Merge and Mirror program
+#
 # 20080215	Dale Amon <amon@islandone.org>
 #		Added full switch support. Added support for port
 #		forwarding by allowing specification of an ssh port

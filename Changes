@@ -1,3 +1,9 @@
+mnm (0.02-2) unstable; urgency=low
+
+  * Added Version to Perl MANIFEST.
+
+ -- Dale Amon <amon@vnl.com>  Wed,  6 Aug 2008 11:44:13 +0100
+
 mnm (0.02-1) unstable; urgency=low
 
   * Updated packaging so that I can build a perl dist when I build

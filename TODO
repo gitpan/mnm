@@ -1,0 +1,16 @@
+=================
+General
+
+- MNM: write a HowTo
+	- "Merge and Mirror... or Mirror and Merge, depending on your parity"
+  [DMA20080805 - ?]
+
+- MNM: add an examples directory
+  [DMA20080805 - ?]
+
+- MNM: add a veryquiet switch to turn off even the normal reporting?
+  [DMA20080805 - ?]
+
+- MNM: can I display the port number in the normal report or is it
+  unnecessary?
+  [DMA20080805 - ?]

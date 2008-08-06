@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         mnm
-version:      0.02-1
+version:      0.02-2
 version_from: Version
 installdirs:  site
 requires:
